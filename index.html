@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Control - Óptica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        /* Ticket Styles */
+        .ticket {
+            background: white;
+            border: 2px dashed #666;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ticket-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .ticket-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .ticket-info {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .ticket-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .ticket-value {
+            color: #666;
+            text-align: right;
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+
+        .ticket-section {
+            margin: 20px 0;
+            padding: 15px 0;
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+        }
+
+        .ticket-total {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .ticket-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #333;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .ticket-number {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+            color: #999;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .card:first-child {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                padding: 0;
+            }
+            .btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .promo-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Panel de Configuración -->
+        <div class="card" id="configPanel" style="grid-column: 1 / -1; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); border: 3px solid #f39c12;">
+            <h2 style="color: #d63031; margin-bottom: 15px;">⚙️ Configuración de Google Sheets</h2>
+            <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 10px; color: #2d3436;">
+                    Pega aquí la URL de tu Google Apps Script:
+                </label>
+                <input type="text" id="sheetsUrlInput" 
+                       placeholder="https://script.google.com/macros/s/AKfycby.../exec"
+                       style="width: 100%; padding: 12px; border: 2px solid #0984e3; border-radius: 8px; font-family: monospace; font-size: 14px;">
+                <button onclick="guardarConfiguracion()" class="btn" style="margin-top: 15px; background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                    💾 Guardar Configuración
+                </button>
+                <div id="configStatus" style="margin-top: 10px; padding: 10px; border-radius: 5px; display: none;"></div>
+            </div>
+            <details style="cursor: pointer;">
+                <summary style="font-weight: bold; color: #2d3436; padding: 10px; background: white; border-radius: 5px;">
+                    📖 ¿Cómo obtener la URL? (Click para ver instrucciones)
+                </summary>
+                <div style="background: white; padding: 15px; margin-top: 10px; border-radius: 5px; font-size: 14px;">
+                    <ol style="margin-left: 20px; line-height: 1.8;">
+                        <li>Abre <a href="https://sheets.google.com" target="_blank" style="color: #0984e3;">Google Sheets</a> y crea una nueva hoja</li>
+                        <li>Ve a <strong>Extensiones → Apps Script</strong></li>
+                        <li>Borra todo el código y pega el del archivo <strong>google-apps-script.js</strong></li>
+                        <li>Guarda el proyecto (Ctrl + S)</li>
+                        <li>Click en <strong>Implementar → Nueva implementación</strong></li>
+                        <li>Tipo: <strong>Aplicación web</strong></li>
+                        <li>Quién tiene acceso: <strong>Cualquier usuario</strong></li>
+                        <li>Click en <strong>Implementar</strong></li>
+                        <li>Copia la URL que termina en <code>/exec</code></li>
+                        <li>Pégala arriba y guarda</li>
+                    </ol>
+                </div>
+            </details>
+        </div>
+
+        <!-- Formulario -->
+        <div class="card">
+            <h1>Control de Ventas</h1>
+            <p class="subtitle">Ingrese los datos de la venta para generar el comprobante</p>
+            
+            <form id="ventaForm">
+                <div class="form-group">
+                    <label for="nombreCliente">Nombre del Cliente *</label>
+                    <input type="text" id="nombreCliente" required placeholder="Ej: Juan Pérez">
+                </div>
+
+                <div class="form-group">
+                    <label for="fechaVenta">Fecha de Venta *</label>
+                    <input type="date" id="fechaVenta" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombreAro">Nombre del Aro *</label>
+                    <input type="text" id="nombreAro" required placeholder="Ej: Ray-Ban Aviator">
+                </div>
+
+                <div class="form-group">
+                    <label for="codigoAro">Código del Aro *</label>
+                    <input type="text" id="codigoAro" required placeholder="Ej: ARO-001">
+                </div>
+
+                <div class="form-group">
+                    <label for="color">Color *</label>
+                    <input type="text" id="color" required placeholder="Ej: Negro Mate">
+                </div>
+
+                <div class="form-group">
+                    <label for="material">Material *</label>
+                    <select id="material" required>
+                        <option value="">Seleccione un material</option>
+                        <option value="Metal">Metal</option>
+                        <option value="Acetato">Acetato</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoAro">Tipo de Aro *</label>
+                    <select id="tipoAro" required>
+                        <option value="">Seleccione un tipo</option>
+                        <option value="Completo">Completo</option>
+                        <option value="Semi al aire">Semi al aire</option>
+                        <option value="Al aire">Al aire</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Medidas del Aro *</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <div>
+                            <input type="number" id="medidaLente" required placeholder="Lente" min="0" step="1" style="text-align: center;">
+                            <small style="display: block; text-align: center; color: #666; margin-top: 5px;">Lente (mm)</small>
+                        </div>
+                        <div>
+                            <input type="number" id="medidaPuente" required placeholder="Puente" min="0" step="1" style="text-align: center;">
+                            <small style="display: block; text-align: center; color: #666; margin-top: 5px;">Puente (mm)</small>
+                        </div>
+                        <div>
+                            <input type="number" id="medidaVarilla" required placeholder="Varilla" min="0" step="1" style="text-align: center;">
+                            <small style="display: block; text-align: center; color: #666; margin-top: 5px;">Varilla (mm)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="promoAroGratis">
+                    <label for="promoAroGratis">Promoción: Aro Gratis</label>
+                </div>
+
+                <div class="form-group" id="valorAroGroup">
+                    <label for="valorAro">Valor del Aro (USD) *</label>
+                    <input type="number" id="valorAro" step="0.01" min="0" placeholder="Ej: 45.00">
+                </div>
+
+                <button type="submit" class="btn">Generar Comprobante</button>
+                <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar Formulario</button>
+            </form>
+        </div>
+
+        <!-- Vista Previa del Ticket -->
+        <div class="card">
+            <div id="ticketPreview" class="hidden">
+                <div class="ticket">
+                    <div class="ticket-header">
+                        <div class="ticket-title">ÓPTICA</div>
+                        <div class="ticket-subtitle">Comprobante de Venta</div>
+                    </div>
+
+                    <div class="ticket-info">
+                        <span class="ticket-label">Cliente:</span>
+                        <span class="ticket-value" id="t-cliente"></span>
+                    </div>
+
+                    <div class="ticket-info">
+                        <span class="ticket-label">Fecha:</span>
+                        <span class="ticket-value" id="t-fecha"></span>
+                    </div>
+
+                    <div class="ticket-section">
+                        <div class="ticket-info">
+                            <span class="ticket-label">Producto:</span>
+                            <span class="ticket-value" id="t-nombre"></span>
+                        </div>
+
+                        <div class="ticket-info">
+                            <span class="ticket-label">Código:</span>
+                            <span class="ticket-value" id="t-codigo"></span>
+                        </div>
+
+                        <div class="ticket-info">
+                            <span class="ticket-label">Color:</span>
+                            <span class="ticket-value" id="t-color"></span>
+                        </div>
+
+                        <div class="ticket-info">
+                            <span class="ticket-label">Material:</span>
+                            <span class="ticket-value" id="t-material"></span>
+                        </div>
+
+                        <div class="ticket-info">
+                            <span class="ticket-label">Tipo:</span>
+                            <span class="ticket-value" id="t-tipo"></span>
+                        </div>
+
+                        <div class="ticket-info">
+                            <span class="ticket-label">Medidas:</span>
+                            <span class="ticket-value" id="t-medidas"></span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-total">
+                        <div class="ticket-info">
+                            <span class="ticket-label">TOTAL:</span>
+                            <span class="ticket-value" id="t-total"></span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-footer">
+                        <p>Gracias por su compra</p>
+                        <p>¡Vuelva pronto!</p>
+                    </div>
+
+                    <div class="ticket-number" id="t-numero"></div>
+                </div>
+
+                <button class="btn" onclick="imprimirTicket()">Imprimir Comprobante</button>
+                <button class="btn btn-secondary" onclick="guardarRegistro()">Guardar y Nueva Venta</button>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p>Complete el formulario para generar el comprobante</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let contadorVentas = 1;
+        let registrosVentas = JSON.parse(localStorage.getItem('ventasOptica')) || [];
+
+        // ============================================
+        // CONFIGURACIÓN DE GOOGLE SHEETS
+        // ============================================
+        let GOOGLE_SHEETS_URL = localStorage.getItem('googleSheetsUrl') || '';
+        
+        // Cargar URL guardada en el input al iniciar
+        window.addEventListener('DOMContentLoaded', function() {
+            if (GOOGLE_SHEETS_URL) {
+                document.getElementById('sheetsUrlInput').value = GOOGLE_SHEETS_URL;
+                mostrarEstadoConfig('✅ Google Sheets configurado correctamente', 'success');
+            } else {
+                mostrarEstadoConfig('⚠️ Configura Google Sheets para guardar ventas automáticamente', 'warning');
+            }
+        });
+
+        // Guardar configuración de Google Sheets
+        function guardarConfiguracion() {
+            const urlInput = document.getElementById('sheetsUrlInput').value.trim();
+            
+            if (!urlInput) {
+                mostrarEstadoConfig('❌ Por favor ingresa una URL válida', 'error');
+                return;
+            }
+            
+            if (!urlInput.includes('script.google.com') || !urlInput.endsWith('/exec')) {
+                mostrarEstadoConfig('❌ La URL debe ser de Google Apps Script y terminar en /exec', 'error');
+                return;
+            }
+            
+            GOOGLE_SHEETS_URL = urlInput;
+            localStorage.setItem('googleSheetsUrl', urlInput);
+            mostrarEstadoConfig('✅ Configuración guardada correctamente. ¡Ya puedes registrar ventas!', 'success');
+        }
+
+        function mostrarEstadoConfig(mensaje, tipo) {
+            const statusDiv = document.getElementById('configStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = mensaje;
+            
+            if (tipo === 'success') {
+                statusDiv.style.background = '#d4edda';
+                statusDiv.style.color = '#155724';
+                statusDiv.style.border = '1px solid #c3e6cb';
+            } else if (tipo === 'error') {
+                statusDiv.style.background = '#f8d7da';
+                statusDiv.style.color = '#721c24';
+                statusDiv.style.border = '1px solid #f5c6cb';
+            } else if (tipo === 'warning') {
+                statusDiv.style.background = '#fff3cd';
+                statusDiv.style.color = '#856404';
+                statusDiv.style.border = '1px solid #ffeaa7';
+            }
+        }
+        
+        // ============================================
+
+        // Cargar contador desde localStorage
+        if (registrosVentas.length > 0) {
+            contadorVentas = registrosVentas.length + 1;
+        }
+
+        // Establecer fecha actual por defecto
+        document.getElementById('fechaVenta').valueAsDate = new Date();
+
+        // Manejar checkbox de promoción
+        document.getElementById('promoAroGratis').addEventListener('change', function() {
+            const valorAroGroup = document.getElementById('valorAroGroup');
+            const valorAroInput = document.getElementById('valorAro');
+            
+            if (this.checked) {
+                valorAroGroup.style.display = 'none';
+                valorAroInput.required = false;
+                valorAroInput.value = '0';
+            } else {
+                valorAroGroup.style.display = 'block';
+                valorAroInput.required = true;
+                valorAroInput.value = '';
+            }
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('ventaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generarComprobante();
+        });
+
+        function generarComprobante() {
+            // Obtener valores del formulario
+            const nombreCliente = document.getElementById('nombreCliente').value;
+            const fechaVenta = document.getElementById('fechaVenta').value;
+            const nombreAro = document.getElementById('nombreAro').value;
+            const codigoAro = document.getElementById('codigoAro').value;
+            const color = document.getElementById('color').value;
+            const material = document.getElementById('material').value;
+            const tipoAro = document.getElementById('tipoAro').value;
+            const medidaLente = document.getElementById('medidaLente').value;
+            const medidaPuente = document.getElementById('medidaPuente').value;
+            const medidaVarilla = document.getElementById('medidaVarilla').value;
+            const promoGratis = document.getElementById('promoAroGratis').checked;
+            const valorAro = promoGratis ? 0 : parseFloat(document.getElementById('valorAro').value);
+
+            // Formatear fecha
+            const fecha = new Date(fechaVenta + 'T00:00:00');
+            const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+
+            // Formatear medidas
+            const medidasFormateadas = `${medidaLente}-${medidaPuente}-${medidaVarilla}`;
+
+            // Llenar el ticket
+            document.getElementById('t-cliente').textContent = nombreCliente;
+            document.getElementById('t-fecha').textContent = fechaFormateada;
+            document.getElementById('t-nombre').textContent = nombreAro;
+            document.getElementById('t-codigo').textContent = codigoAro;
+            document.getElementById('t-color').textContent = color;
+            document.getElementById('t-material').textContent = material;
+            document.getElementById('t-tipo').textContent = tipoAro;
+            document.getElementById('t-medidas').textContent = medidasFormateadas;
+            
+            // Mostrar total
+            let totalText = promoGratis 
+                ? 'PROMO: ARO GRATIS 🎉' 
+                : `$${valorAro.toFixed(2)}`;
+            document.getElementById('t-total').textContent = totalText;
+            
+            // Número de ticket
+            document.getElementById('t-numero').textContent = `Ticket #${String(contadorVentas).padStart(6, '0')}`;
+
+            // Mostrar ticket y ocultar empty state
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('ticketPreview').classList.remove('hidden');
+
+            // Scroll al ticket en móviles
+            if (window.innerWidth <= 768) {
+                document.getElementById('ticketPreview').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function imprimirTicket() {
+            window.print();
+        }
+
+        function guardarRegistro() {
+            // Preparar datos de la venta
+            const venta = {
+                numero: contadorVentas,
+                cliente: document.getElementById('nombreCliente').value,
+                fecha: document.getElementById('fechaVenta').value,
+                nombreAro: document.getElementById('nombreAro').value,
+                codigoAro: document.getElementById('codigoAro').value,
+                color: document.getElementById('color').value,
+                material: document.getElementById('material').value,
+                tipoAro: document.getElementById('tipoAro').value,
+                medidaLente: document.getElementById('medidaLente').value,
+                medidaPuente: document.getElementById('medidaPuente').value,
+                medidaVarilla: document.getElementById('medidaVarilla').value,
+                promoGratis: document.getElementById('promoAroGratis').checked,
+                valor: document.getElementById('promoAroGratis').checked ? 0 : parseFloat(document.getElementById('valorAro').value),
+                timestamp: new Date().toISOString()
+            };
+
+            // Guardar en localStorage
+            registrosVentas.push(venta);
+            localStorage.setItem('ventasOptica', JSON.stringify(registrosVentas));
+
+            // Enviar a Google Sheets
+            enviarAGoogleSheets(venta);
+
+            contadorVentas++;
+            
+            // Mostrar mensaje de éxito
+            alert('✅ Venta guardada exitosamente');
+            
+            // Limpiar formulario para nueva venta
+            limpiarFormulario();
+        }
+
+        async function enviarAGoogleSheets(venta) {
+            // Verificar si se configuró la URL de Google Sheets
+            if (!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL === '') {
+                console.warn('⚠️ URL de Google Sheets no configurada. Configúrala en el panel amarillo superior.');
+                return;
+            }
+
+            try {
+                const medidas = `${venta.medidaLente}-${venta.medidaPuente}-${venta.medidaVarilla}`;
+                
+                const formData = new FormData();
+                formData.append('numero', venta.numero);
+                formData.append('cliente', venta.cliente);
+                formData.append('fecha', venta.fecha);
+                formData.append('nombreAro', venta.nombreAro);
+                formData.append('codigoAro', venta.codigoAro);
+                formData.append('color', venta.color);
+                formData.append('material', venta.material);
+                formData.append('tipoAro', venta.tipoAro);
+                formData.append('medidas', medidas);
+                formData.append('promoGratis', venta.promoGratis ? 'Sí' : 'No');
+                formData.append('valor', venta.valor);
+                formData.append('timestamp', venta.timestamp);
+
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    console.log('✅ Datos enviados a Google Sheets correctamente');
+                } else {
+                    console.error('❌ Error al enviar a Google Sheets:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Error al conectar con Google Sheets:', error);
+            }
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('ventaForm').reset();
+            document.getElementById('fechaVenta').valueAsDate = new Date();
+            document.getElementById('valorAroGroup').style.display = 'block';
+            document.getElementById('valorAro').required = true;
+            
+            // Ocultar ticket y mostrar empty state
+            document.getElementById('ticketPreview').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+
+            // Scroll al formulario
+            if (window.innerWidth <= 768) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Atajo de teclado: Ctrl/Cmd + Enter para generar comprobante
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                const form = document.getElementById('ventaForm');
+                if (form.checkValidity()) {
+                    generarComprobante();
+                } else {
+                    form.reportValidity();
+                }
+            }
+        });
+    </script>
+
+    <!--
+    ============================================
+    CÓDIGO PARA GOOGLE APPS SCRIPT
+    ============================================
+    
+    INSTRUCCIONES PARA CONFIGURAR GOOGLE SHEETS:
+    
+    1. Crea una nueva hoja de Google Sheets
+    2. Dale un nombre a tu hoja (ej: "Control Óptica")
+    3. Ve a Extensiones > Apps Script
+    4. Borra todo el código que aparece y pega el siguiente código:
+    
+    ============================================
+    
+    function doPost(e) {
+      try {
+        var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+        
+        // Si la hoja está vacía, agregar encabezados
+        if (sheet.getLastRow() === 0) {
+          sheet.appendRow([
+            'Nº Ticket',
+            'Cliente',
+            'Fecha',
+            'Nombre Aro',
+            'Código Aro',
+            'Color',
+            'Material',
+            'Tipo Aro',
+            'Medidas',
+            'Promo Aro Gratis',
+            'Valor',
+            'Fecha/Hora Registro'
+          ]);
+          
+          // Formatear encabezados
+          var headerRange = sheet.getRange(1, 1, 1, 12);
+          headerRange.setBackground('#667eea');
+          headerRange.setFontColor('#ffffff');
+          headerRange.setFontWeight('bold');
+          headerRange.setHorizontalAlignment('center');
+        }
+        
+        // Obtener datos del formulario
+        var numero = e.parameter.numero;
+        var cliente = e.parameter.cliente;
+        var fecha = e.parameter.fecha;
+        var nombreAro = e.parameter.nombreAro;
+        var codigoAro = e.parameter.codigoAro;
+        var color = e.parameter.color;
+        var material = e.parameter.material;
+        var tipoAro = e.parameter.tipoAro;
+        var medidas = e.parameter.medidas;
+        var promoGratis = e.parameter.promoGratis;
+        var valor = e.parameter.valor;
+        var timestamp = e.parameter.timestamp;
+        
+        // Formatear la fecha y hora
+        var fechaFormateada = new Date(timestamp).toLocaleString('es-ES', {
+          timeZone: 'America/El_Salvador'
+        });
+        
+        // Agregar fila con los datos
+        sheet.appendRow([
+          numero,
+          cliente,
+          fecha,
+          nombreAro,
+          codigoAro,
+          color,
+          material,
+          tipoAro,
+          medidas,
+          promoGratis,
+          valor,
+          fechaFormateada
+        ]);
+        
+        // Formatear la nueva fila
+        var lastRow = sheet.getLastRow();
+        var dataRange = sheet.getRange(lastRow, 1, 1, 12);
+        dataRange.setBorder(true, true, true, true, true, true);
+        
+        // Ajustar ancho de columnas automáticamente (solo primera vez)
+        if (sheet.getLastRow() === 2) {
+          sheet.autoResizeColumns(1, 12);
+        }
+        
+        return ContentService.createTextOutput(
+          JSON.stringify({ 'result': 'success', 'row': lastRow })
+        ).setMimeType(ContentService.MimeType.JSON);
+        
+      } catch (error) {
+        return ContentService.createTextOutput(
+          JSON.stringify({ 'result': 'error', 'error': error.toString() })
+        ).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+    
+    ============================================
+    
+    5. Haz clic en "Guardar proyecto" (icono de disquete)
+    6. Dale un nombre al proyecto (ej: "API Óptica")
+    7. Haz clic en "Implementar" > "Nueva implementación"
+    8. Selecciona el tipo "Aplicación web"
+    9. En "Ejecutar como": selecciona tu cuenta
+    10. En "Quién tiene acceso": selecciona "Cualquier usuario"
+    11. Haz clic en "Implementar"
+    12. Copia la URL que te da (termina en /exec)
+    13. Pega esa URL en la variable GOOGLE_SHEETS_URL al inicio del archivo HTML
+    
+    ¡Listo! Ahora cada venta se guardará automáticamente en Google Sheets
+    
+    ============================================
+    -->
+</body>
+</html>
